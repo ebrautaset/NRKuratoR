@@ -40,7 +40,7 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
   from UNNEST(GENERATE_TIMESTAMP_ARRAY('",fra,"', '",til,"', INTERVAL ",amount," ",period,")) AS secs),
   kurator AS (  
  
-  SELECT * FROM `nrk-datahub.test_tom.kurator_url_and_placement_periods` WHERE url like ",ID," AND (
+  SELECT * FROM `nrk-datahub.test_tom.kurator_url_and_placement_periods` WHERE url like '",ID,"' AND (
   ",fra," >= startTime AND ",til," <= endTime
 )  )  
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
