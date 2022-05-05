@@ -4,20 +4,30 @@
 \alias{create_timeseries}
 \title{create_timeseries}
 \usage{
-create_timeseries(email, from, to, period = "SECOND", amount = 60, contentId)
+create_timeseries(
+  email,
+  fra,
+  til,
+  period = "SECOND",
+  amount = 60,
+  type = "contentId",
+  contentId
+)
 }
 \arguments{
 \item{email}{Epost til konto du ønsker å spørre etter dataene med}
 
-\item{from}{Date(time) for starttidspunkt}
+\item{fra}{Date(time) for starttidspunkt}
 
-\item{to}{Date(time) for sluttidspunkt}
+\item{til}{Date(time) for sluttidspunkt}
 
 \item{period}{Nivået på periodene du ønsker å aggregere på. Tillater MICROSECOND , MILLISECOND , SECOND , MINUTE , HOUR eller DAY}
 
 \item{amount}{Angi størrelsen på intervallene i perioden. Hvis period er satt til SECOND og amount til 20, vil vi lage et datasett med 20 sekunds intervaller}
 
-\item{contentId}{Angi contentID for pluggen du ønsker å hente data for. Vi støtter p.t. ikke å legge inn flere contentID'er}
+\item{type}{Angi hva du ønsker å bruke som identifikator - contentId eller url.}
+
+\item{ID}{Angi contentID for pluggen du ønsker å hente data for. ContentID behøver polypoly prefix'er og URL'er trenger å bli enkapsulert med %}
 }
 \value{
 Et datasett som viser etasje og rom for en gitt artikkel på bestemte tidspunkter
@@ -27,5 +37,6 @@ Denne funksjonen lager et datasett med plassering av en plugg fra forsiden for e
 }
 \examples{
 create_timeseries("eirik.brautaset(at)nrk.no","2022-04-03 00:00:00","2022-04-03 23:59:59",1,"SECONDS","pp:1.15918927")
+create_timeseries("eirik.brautaset(at)nrk.no","2022-04-03 00:00:00","2022-04-03 23:59:59",1,"SECONDS",type="url", "\%paskenotter\%")
 
 }
