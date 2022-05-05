@@ -23,25 +23,27 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
   
   
   if(type == "contentId"){
-    get_df(paste0(
+    
+    kveri = paste0(
       "with secs AS (select * 
   from UNNEST(GENERATE_TIMESTAMP_ARRAY('",fra,"', '",til,"', INTERVAL ",amount," ",period,")) AS secs),
   kurator AS (  SELECT startTime,  endTime,contentId,floorNumber,roomNumber
   FROM `nrk-datahub.consumer_facing_views.kurator_time_periods_detailed` 
   WHERE contentId = '",contentId,"'  AND publishedDate between '",as.Date(fra),"'  AND '",as.Date(til),"')  
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
-      
-      ,email)
+    
+    #get_df(kveri,email)
   
   } else if (type == "url"){
-    get_df(paste0(
+    kveri = paste0(
       "with secs AS (select * 
   from UNNEST(GENERATE_TIMESTAMP_ARRAY('",fra,"', '",til,"', INTERVAL ",amount," ",period,")) AS secs),
   kurator AS (  
  
   SELECT * FROM `nrk-scratchbook.eirik.kurator_url_and_placement_periods` WHERE url like '",contentId,"' )  
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
-      ,email)
+    
+    #get_df(kveri,email)
   } else {print("IKke godtatt type")}
   
   
