@@ -21,6 +21,13 @@
 create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="contentId",contentId){
   require(bigrquery)
   
+  fra = as.POSIXct(fra, format = "%Y-%m-%d %H:%M:%S", tz = "Europe/Oslo")
+  attr(fra, "tzone") = "UTC"
+  fra = as.character(fra)
+  
+  til = as.POSIXct(til, format = "%Y-%m-%d %H:%M:%S", tz = "Europe/Oslo")
+  attr(til, "tzone") = "UTC"
+  til = as.character(til)
   
   if(type == "contentId"){
     
