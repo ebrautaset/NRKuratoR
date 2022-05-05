@@ -18,7 +18,7 @@
 #' create_timeseries("eirik.brautaset(at)nrk.no","2022-04-03 00:00:00","2022-04-03 23:59:59",1,"SECONDS",type="url", "%paskenotter%")
 #' 
 #' @export
-create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="contentId",contentId){
+create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="contentId",ID){
   require(bigrquery)
   
   
