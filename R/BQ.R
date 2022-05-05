@@ -28,7 +28,7 @@ get_df = function(sql,epost){
   ## 
   id= ""
   
-  if(grepl("nrk-scratchbook",test, fixed = FALSE)) {
+  if(grepl("nrk-scratchbook",sql, fixed = FALSE)) {
     
     id = "nrk-scratchbook"
   } else {
