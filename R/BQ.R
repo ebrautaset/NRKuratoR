@@ -26,8 +26,16 @@ get_df = function(sql,epost){
   )
   
   ## 
+  id= ""
   
-  df = bq_table_download(bq_project_query("nrk-datahub",sql))
+  if(grepl("nrk-scratchbook",test, fixed = FALSE)) {
+    
+    id = "nrk-scratchbook"
+  } else {
+    id = "nrk-datahub" 
+  }
+  
+  df = bq_table_download(bq_project_query(id,sql))
   
   df
   
