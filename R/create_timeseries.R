@@ -31,7 +31,7 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
   FROM `nrk-datahub.consumer_facing_views.kurator_time_periods_detailed` 
   WHERE contentId = '",contentId,"'  AND publishedDate between '",as.Date(fra),"'  AND '",as.Date(til),"')  
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
-    
+    kveri
     #get_df(kveri,email)
   
   } else if (type == "url"){
@@ -44,6 +44,7 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
     
     #get_df(kveri,email)
+    kveri
   } else {print("IKke godtatt type")}
   
   
