@@ -17,7 +17,6 @@ get_cutoff = function(df,start,slutt){
   require(dplyr)
   dfr = df
   
-  
   ## Endre tidssone for datovariabler til Oslotid
   
   dfr$startTime = format(dfr$startTime, tz="Europe/Oslo",usetz=TRUE)
@@ -34,35 +33,40 @@ get_cutoff = function(df,start,slutt){
   
   for(i in 1:nrow(dfr)){
     
-    if(
+    if(is.na(dfr$startTime[i])) {
+      if(
+        
+        ( #Er starttidspunktet innenfor intervallet?
+          
+          (as.integer(format(as.POSIXct(dfr$startTime[i]), format = "%H")) >= start)
+          
+          &&
+          
+          (as.integer(format(as.POSIXct(dfr$startTime[i]), format = "%H")) < slutt)
+          
+          
+        ) || (#Er sluttidspunktet innenfor intervallet?
+          
+          as.integer(format(as.POSIXct(dfr$endTime[i]), format = "%H")) >= start
+          
+          &&
+          
+          as.integer(format(as.POSIXct(dfr$endTime[i]), format = "%H")) < slutt
+        )
+        
+        
+      ){
+        dfr$Issendetid[i] = TRUE
+        
+      } else {
+        dfr$Issendetid[i] = FALSE
+      }
       
-      ( #Er starttidspunktet innenfor intervallet?
-        
-        (as.integer(format(as.POSIXct(dfr$startTime[i]), format = "%H")) >= start)
-        
-        &&
-        
-        (as.integer(format(as.POSIXct(dfr$startTime[i]), format = "%H")) < slutt)
-        
-        
-      ) || (#Er sluttidspunktet innenfor intervallet?
-        
-        as.integer(format(as.POSIXct(dfr$endTime[i]), format = "%H")) >= start
-        
-        &&
-        
-        as.integer(format(as.POSIXct(dfr$endTime[i]), format = "%H")) < slutt
-      )
-      
-      
-    ){
-      dfr$Issendetid[i] = TRUE
-      
-    } else {
-      dfr$Issendetid[i] = FALSE
     }
     
-  }
+    } else {print(paste0("exception on row ",i) )}
+    
+
   
   
   dfr$Issendetid = as.logical(dfr$Issendetid)

@@ -14,6 +14,9 @@
 #' @export
 get_df = function(sql,epost){
   require(bigrquery)
+  require(lubridate)
+  
+  evaluering = function(d,p) names(d)[grep(p,names(d))]
 
   bq_auth(
     email = epost,
@@ -37,6 +40,19 @@ get_df = function(sql,epost){
   
   df = bq_table_download(bq_project_query(id,sql))
   
+  ## Fikse tidssoner
+  
+  if(evaluering(df,"starTime")){
+    
+    df$starTime = lubridate::with_tz(tempdf$starTime, tz="Europe/Oslo")
+    
+  } else {}
+  
+  if(evaluering(df,"endTime")){
+    
+    df$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
+  }
+
   df
   
 }
