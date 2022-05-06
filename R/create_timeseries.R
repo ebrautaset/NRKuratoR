@@ -45,6 +45,7 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
     tempdf$secs = lubridate::with_tz(tempdf$secs, tz="Europe/Oslo")
     tempdf$startTime = lubridate::with_tz(tempdf$startTime, tz="Europe/Oslo")
     tempdf$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
+    tempdf
     
   } else if (type == "url"){
     kveri = paste0(
@@ -60,7 +61,9 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
     tempdf$secs = lubridate::with_tz(tempdf$secs, tz="Europe/Oslo")
     tempdf$startTime = lubridate::with_tz(tempdf$startTime, tz="Europe/Oslo")
     tempdf$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
-    
+    tempdf
+
+        
   } else {print("IKke godtatt type")}
   
 
