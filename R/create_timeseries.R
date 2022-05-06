@@ -20,6 +20,7 @@
 #' @export
 create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="contentId",contentId){
   require(bigrquery)
+  require(lubridate)
   
   fra = as.POSIXct(fra, format = "%Y-%m-%d %H:%M:%S", tz = "Europe/Oslo")
   attr(fra, "tzone") = "UTC"
@@ -39,8 +40,12 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
   WHERE contentId = '",contentId,"'  AND publishedDate between '",as.Date(fra),"'  AND '",as.Date(til),"')  
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
     print(paste0("Henter data med spørringen: ",kveri))
-    get_df(kveri,email)
-  
+    
+    tempdf = get_df(kveri,email)
+    tempdf$secs = lubridate::with_tz(tempdf$secs, tz="Europe/Oslo")
+    tempdf$startTime = lubridate::with_tz(tempdf$startTime, tz="Europe/Oslo")
+    tempdf$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
+    
   } else if (type == "url"){
     kveri = paste0(
       "with secs AS (select * 
@@ -51,11 +56,12 @@ create_timeseries = function(email,fra,til,period="SECOND",amount=60,type="conte
   select * from secs s left join kurator k on s.secs between k.startTime and k.endTime order by 1")
     
     print(paste0("Henter data med spørringen: ",kveri))   
-    get_df(kveri,email)
- 
+    tempdf = get_df(kveri,email)
+    tempdf$secs = lubridate::with_tz(tempdf$secs, tz="Europe/Oslo")
+    tempdf$startTime = lubridate::with_tz(tempdf$startTime, tz="Europe/Oslo")
+    tempdf$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
+    
   } else {print("IKke godtatt type")}
-  
-  
   
 
 }
