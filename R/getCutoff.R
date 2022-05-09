@@ -62,9 +62,9 @@ get_cutoff = function(df,start,slutt){
         dfr$Issendetid[i] = FALSE
       }
       
-    }
+    }  else {print(paste0("exception on row ",i) )}
     
-    } else {print(paste0("exception on row ",i) )}
+    }
     
 
   
