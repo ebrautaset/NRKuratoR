@@ -34,9 +34,17 @@ get_df = function(sql,epost){
   if(grepl("nrk-scratchbook",sql, fixed = FALSE)) {
     
     id = "nrk-scratchbook"
-  } else {
+  } else if(grepl("nrk-datahub",sql, fixed = FALSE)) {
     id = "nrk-datahub" 
-  }
+  } else if(grepl("nrk-midas-event",sql, fixed = FALSE)){
+    id = "nrk-midas-event" 
+  } else if(grepl("nrk-ark",sql, fixed = FALSE)){
+    id = "nrk-ark"
+    
+  } else if(grepl("nrk-tv-d4402",sql, fixed = FALSE)) {
+    id = "nrk-tv-d4402"
+    
+  } else {print("ID'en er ikke tilgjengeliggjort - kontakt eirik.brautaset@nrk.no")}
   
   df = bq_table_download(bq_project_query(id,sql))
   
