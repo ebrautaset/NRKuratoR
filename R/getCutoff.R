@@ -31,13 +31,16 @@ get_cutoff = function(df,start,slutt){
       # Første ledd
     
       ledd1 = strsplit(tidspunkt,"[.]")[[1]][1]
+      print(ledd1)
       # Andre ledd
       
       if(is.na(strsplit(tidspunkt,"[.]")[[1]][2])) {
         
         ledd2 = 0
       } else {
-        ledd2 = ((as.integer(strsplit(tidspunkt,"[.]")[[1]][2])/60)*100) 
+        print("Beregner minutter til fraksjon")
+        ledd2 = ((as.integer(strsplit(tidspunkt,"[.]")[[1]][2])/60)*100)
+        print(paste0("Printer ledd2: ",ledd2))
         
       }
     
@@ -47,7 +50,6 @@ get_cutoff = function(df,start,slutt){
       
       # Første ledd
       ledd1 = strsplit(tidspunkt,":")[[1]][1]
-      
       
       #Andre ledd
       if(is.na(strsplit(tidspunkt,":")[[1]][2])) {
@@ -66,7 +68,8 @@ get_cutoff = function(df,start,slutt){
       }
     
    # Ferdig resultat
-    as.numeric(paste0(ledd1,".",ledd2))
+    print("Ferdig resultat")
+    as.numeric(paste0(ledd1,".",round(33.333333,0)))
     
      
   }
@@ -90,13 +93,6 @@ get_cutoff = function(df,start,slutt){
       }
     }
     
-  
-  
-  
-  
-  
-  
-  
   
   
   
@@ -131,36 +127,12 @@ get_cutoff = function(df,start,slutt){
       if(
         
         ( #Er starttidspunktet innenfor intervallet?
-          
-          (
-            
-            time_to_numeric(
-              
-              format(as.POSIXct(tempdf$startTime[i]), format = "%H.%M")
-              
-              
-              ) >= time_to_numeric(start) 
-            
-            
-            )
+         
+          (time_to_numeric(format(as.POSIXct(tempdf$startTime[i]), format = "%H.%M")) >= time_to_numeric(start))
           
           &&
           
-          (
-            
-            time_to_numeric(
-              
-              format(
-                
-                as.POSIXct(
-                  
-                  tempdf$startTime[i]), format = "%H.%M")
-              
-              
-              ) < time_to_numeric(slutt)
-            
-            
-            )
+          (time_to_numeric(format(as.POSIXct(tempdf$startTime[i]), format = "%H.%M")) < time_to_numeric(slutt))
           
           
         ) || (#Er sluttidspunktet innenfor intervallet?
