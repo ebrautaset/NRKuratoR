@@ -54,7 +54,14 @@ get_df = function(sql,epost){
   
   for(i in names(df)){
     
-    if(is.POSIXct(df[i][[1]]))df[i][[1]] = lubridate::with_tz(df[i][[1]], tz="Europe/Oslo")
+    if(is.POSIXct(df[i][[1]])){
+      
+      df[i][[1]] = lubridate::with_tz(df[i][[1]], tz="Europe/Oslo")
+    }
+      
+      
+      
+      
     
   }
 

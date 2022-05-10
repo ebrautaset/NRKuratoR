@@ -88,10 +88,9 @@ get_cutoff = function(df,start,slutt){
   
   tempdf$Issendetid = ""
   
-  
   for(i in 1:nrow(tempdf)){
     
-    if(is.na(tempdf$startTime[i])) {
+    if(!is.na(tempdf$startTime[i])) {
       if(
         
         ( #Er starttidspunktet innenfor intervallet?
