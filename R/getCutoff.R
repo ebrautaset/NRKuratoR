@@ -3,7 +3,6 @@
 #' @name get_cutoff
 #' 
 #' @description  Denne funksjonen tar imot et datasett med Kuratordata og beregner ny secondsVisible basert på et program sin sendetid
-#' Funksjonen aksepterer p.t. bare hele timer
 #' 
 #' @param df Datasettet du ønsker evaluert. Her kan du benytte funksjonen get_df()
 #' @param start starttidspunktet for programmets sendetid
@@ -15,51 +14,134 @@
 #' @export
 get_cutoff = function(df,start,slutt){
   require(dplyr)
-  dfr = df
+  require(lubridate)
+  
+  
+  ## Funksjon for å gjøre tid om til numeri
+  
+  time_to_numeric = function(tidspunkt){
+    
+    ledd1 = ""
+    ledd2 = ""
+    
+    if(grepl(".", tidspunkt, fixed = TRUE)){
+      
+      # Første ledd
+      print("passerer grepl")
+    
+      ledd1 = strsplit(tidspunkt,"[.]")[[1]][1]
+      # Andre ledd
+      
+      if(is.na(strsplit(tidspunkt,"[.]")[[1]][2])) {
+        
+        ledd2 = 0
+      } else {
+        ledd2 = ((as.integer(strsplit(tidspunkt,"[.]")[[1]][2])/60)*100) 
+        
+      }
+    
+      
+    } else if(grepl(":", tidspunkt, fixed = TRUE)) {
+      
+      
+      # Første ledd
+      ledd1 = strsplit(tidspunkt,":")[[1]][1]
+      
+      
+      #Andre ledd
+      if(is.na(strsplit(tidspunkt,":")[[1]][2])) {
+        ledd2 = 0
+      } else {
+        ledd2 = ((as.integer(strsplit(tidspunkt,":")[[1]][2])/60)*100) 
+      }
+     
+       
+    } else {
+      print("FEIL: Sørg for at du har med ':' eller '.' som separator mellom time og minutt. eks: 17.00 eller 17:30")
+      }
+    
+   # Ferdig resultat
+    as.numeric(paste0(ledd1,".",ledd2))
+    
+     
+    }
+
+    tempdf = df
   
   ## Endre tidssone for datovariabler til Oslotid
   
-  dfr$startTime = format(dfr$startTime, tz="Europe/Oslo",usetz=TRUE)
-  dfr$startTime = as.POSIXct(dfr$startTime)
   
-  dfr$endTime = format(dfr$endTime, tz="Europe/Oslo",usetz=TRUE)
-  dfr$endTime = as.POSIXct(dfr$endTime)
+  #dfr$startTime = format(dfr$startTime, tz="Europe/Oslo",usetz=TRUE)
+  #dfr$startTime = as.POSIXct(dfr$startTime)
+  #dfr$endTime = format(dfr$endTime, tz="Europe/Oslo",usetz=TRUE)
+  #dfr$endTime = as.POSIXct(dfr$endTime)
+  
+  tempdf$starTime = lubridate::with_tz(tempdf$startTime, tz="Europe/Oslo")
+  tempdf$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
+  
+  
+  ## Behandle starttidspunkt for programmet
+  ## parse integer om til datetime
   
   
   ## Evaluerer om et snapshot er innenfor sendetiden
   
-  dfr$Issendetid = ""
-
+  tempdf$Issendetid = ""
   
-  for(i in 1:nrow(dfr)){
+  
+  for(i in 1:nrow(tempdf)){
     
-    if(is.na(dfr$startTime[i])) {
+    if(is.na(tempdf$startTime[i])) {
       if(
         
         ( #Er starttidspunktet innenfor intervallet?
           
-          (as.integer(format(as.POSIXct(dfr$startTime[i]), format = "%H")) >= start)
+          (
+            
+            time_to_numeric(
+              
+              format(as.POSIXct(tempdf$startTime[i]), format = "%H.%M")
+              
+              
+              ) >= time_to_numeric(start) 
+            
+            
+            )
           
           &&
           
-          (as.integer(format(as.POSIXct(dfr$startTime[i]), format = "%H")) < slutt)
+          (
+            
+            time_to_numeric(
+              
+              format(
+                
+                as.POSIXct(
+                  
+                  tempdf$startTime[i]), format = "%H.%M")
+              
+              
+              ) < time_to_numeric(slutt)
+            
+            
+            )
           
           
         ) || (#Er sluttidspunktet innenfor intervallet?
           
-          as.integer(format(as.POSIXct(dfr$endTime[i]), format = "%H")) >= start
+          time_to_numeric(format(as.POSIXct(tempdf$endTime[i]), format = "%H.%M")) >= time_to_numeric(start)
           
           &&
           
-          as.integer(format(as.POSIXct(dfr$endTime[i]), format = "%H")) < slutt
+          time_to_numeric(format(as.POSIXct(tempdf$endTime[i]), format = "%H")) < time_to_numeric(slutt)
         )
         
         
       ){
-        dfr$Issendetid[i] = TRUE
+        tempdf$Issendetid[i] = TRUE
         
       } else {
-        dfr$Issendetid[i] = FALSE
+        tempdf$Issendetid[i] = FALSE
       }
       
     }  else {print(paste0("exception on row ",i) )}
@@ -69,51 +151,57 @@ get_cutoff = function(df,start,slutt){
 
   
   
-  dfr$Issendetid = as.logical(dfr$Issendetid)
+  tempdf$Issendetid = as.logical(tempdf$Issendetid)
   
   
   ## Sette en cut off date hvor end eller start time er utenfor sendetiden + beregne ny secondsVisible
   
   
-  dfr$endTimeCut = ""
-  dfr$startTimeCut = ""
+  tempdf$endTimeCut = ""
+  tempdf$startTimeCut = ""
   
   
   
-  for(i in 1:nrow(dfr)){ 
-    if(dfr$Issendetid[i] == TRUE){
+  for(i in 1:nrow(tempdf)){ 
+    if(tempdf$Issendetid[i] == TRUE){
       
-      if(as.integer(format(dfr$startTime[i], "%H")) < start ) {
+      if(
         
-        dfr$startTimeCut[i] = paste0(format(dfr$startTime[i], "%Y-%m-%d")," ",start,":00:00 CEST")
+        
+        time_to_numeric(format(tempdf$startTime[i], "%H.%M")) < time_to_numeric(start)
+        
+        
+        ) {
+        
+        tempdf$startTimeCut[i] = paste0(format(tempdf$startTime[i], "%Y-%m-%d")," ",start,":00:00 CEST")
         
       } else {
         
-        dfr$startTimeCut[i] = paste0(as.character(dfr$startTime[i])," CEST")
+        tempdf$startTimeCut[i] = paste0(as.character(tempdf$startTime[i])," CEST")
       }
       
-      if(as.integer(format(dfr$endTime[i], "%H")) >= slutt){
+      if(
         
-        dfr$endTimeCut[i] = paste0(format(dfr$endTime[i], "%Y-%m-%d")," ",slutt,":00:00 CEST")
+        
+        time_to_numeric(format(tempdf$endTime[i], "%H")) >= time_to_numeric(slutt)){
+        
+        tempdf$endTimeCut[i] = paste0(format(tempdf$endTime[i], "%Y-%m-%d")," ",slutt,":00:00 CEST")
         
         
       } else {
         
-        dfr$endTimeCut[i] = paste0(as.character(dfr$endTime[i])," CEST")
+        tempdf$endTimeCut[i] = paste0(as.character(tempdf$endTime[i])," CEST")
         
       }
-      
       
     }
     
   }
   
-  
-  
   ## Regne om secondsVisible basert på cutOffTime
   
-  dfr$secondsVisibleCutted = as.integer(as.POSIXct(dfr$endTimeCut, format="%Y-%m-%d %H:%M:%S")-as.POSIXct(dfr$startTimeCut, format="%Y-%m-%d %H:%M:%S"))
+  tempdf$secondsVisibleCutted = as.integer(as.POSIXct(tempdf$endTimeCut, format="%Y-%m-%d %H:%M:%S")-as.POSIXct(tempdf$startTimeCut, format="%Y-%m-%d %H:%M:%S"))
   
-  dfr
+  tempdf
 }
 

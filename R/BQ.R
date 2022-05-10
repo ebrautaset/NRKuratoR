@@ -50,15 +50,12 @@ get_df = function(sql,epost){
   
   ## Fikse tidssoner
   
-  if(evaluering(df,"starTime")){
-    
-    df$starTime = lubridate::with_tz(tempdf$starTime, tz="Europe/Oslo")
-    
-  } else {}
   
-  if(evaluering(df,"endTime")){
+  
+  for(i in names(df)){
     
-    df$endTime = lubridate::with_tz(tempdf$endTime, tz="Europe/Oslo")
+    if(is.POSIXct(df[i][[1]]))df[i][[1]] = lubridate::with_tz(df[i][[1]], tz="Europe/Oslo")
+    
   }
 
   df
