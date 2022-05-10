@@ -83,7 +83,7 @@ get_cutoff = function(df,start,slutt){
     
     if(grepl(".", klokka, fixed = TRUE)) {
       
-      paste0(strsplit(tidspunkt,"[.]")[[1]][1],":",strsplit(tidspunkt,"[.]")[[1]][2])
+      paste0(strsplit(klokka,"[.]")[[1]][1],":",strsplit(klokka,"[.]")[[1]][2])
        
     } else {
       
