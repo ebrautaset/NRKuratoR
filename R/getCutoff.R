@@ -17,7 +17,7 @@ get_cutoff = function(df,start,slutt){
   require(lubridate)
   
   
-  ## Funksjon for å gjøre tid om til numeri
+  ## Funksjon for å gjøre tid om til numeric
   
   time_to_numeric = function(tidspunkt){
     
@@ -27,7 +27,6 @@ get_cutoff = function(df,start,slutt){
     if(grepl(".", tidspunkt, fixed = TRUE)){
       
       # Første ledd
-      print("passerer grepl")
     
       ledd1 = strsplit(tidspunkt,"[.]")[[1]][1]
       # Andre ledd
@@ -143,12 +142,12 @@ get_cutoff = function(df,start,slutt){
         tempdf$Issendetid[i] = FALSE
       }
       
-    }  else {print(paste0("exception on row ",i) )}
+    }  else {print(paste0("exception (isSendetid) on row ",i) )}
     
     }
     
 
-  
+  print("Ferdig med 'innenfor sendetid'")
   
   tempdf$Issendetid = as.logical(tempdf$Issendetid)
   
@@ -163,6 +162,7 @@ get_cutoff = function(df,start,slutt){
   
   for(i in 1:nrow(tempdf)){ 
     if(tempdf$Issendetid[i] == TRUE){
+      print(paste0("starter (cutOff): ",i))
       
       if(
         
@@ -182,7 +182,7 @@ get_cutoff = function(df,start,slutt){
       if(
         
         
-        time_to_numeric(format(tempdf$endTime[i], "%H")) >= time_to_numeric(slutt)){
+        time_to_numeric(format(tempdf$endTime[i], "%H.%M")) >= time_to_numeric(slutt)){
         
         tempdf$endTimeCut[i] = paste0(format(tempdf$endTime[i], "%Y-%m-%d")," ",slutt,":00:00 CEST")
         
@@ -194,6 +194,9 @@ get_cutoff = function(df,start,slutt){
       }
       
     }
+    
+    print(paste0("Ferdig (cutOff): ",i))
+    
     
   }
   
