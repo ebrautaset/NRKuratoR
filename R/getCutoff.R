@@ -169,7 +169,7 @@ get_cutoff = function(df,start,slutt){
           
           &&
           
-          time_to_numeric(format(as.POSIXct(tempdf$endTime[i]), format = "%H")) < time_to_numeric(slutt)
+          time_to_numeric(format(as.POSIXct(tempdf$endTime[i]), format = "%H.%M")) < time_to_numeric(slutt)
         )
         
         
