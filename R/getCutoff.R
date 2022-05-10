@@ -26,6 +26,8 @@ get_cutoff = function(df,start,slutt){
     
     if(grepl(".", tidspunkt, fixed = TRUE)){
       
+      print("Godkjent grepl('.')")
+      
       # Første ledd
     
       ledd1 = strsplit(tidspunkt,"[.]")[[1]][1]
@@ -41,7 +43,7 @@ get_cutoff = function(df,start,slutt){
     
       
     } else if(grepl(":", tidspunkt, fixed = TRUE)) {
-      
+      print("Godkjent grepl(':')")
       
       # Første ledd
       ledd1 = strsplit(tidspunkt,":")[[1]][1]
@@ -56,16 +58,50 @@ get_cutoff = function(df,start,slutt){
      
        
     } else {
-      print("FEIL: Sørg for at du har med ':' eller '.' som separator mellom time og minutt. eks: 17.00 eller 17:30")
+      
+      print("FEILER på time_to_numeric")
+      print(tidspunkt)
+      
+      #print("FEIL: Sørg for at du har med ':' eller '.' som separator mellom time og minutt. eks: 17.00 eller 17:30")
       }
     
    # Ferdig resultat
     as.numeric(paste0(ledd1,".",ledd2))
     
      
+  }
+  
+  
+  ## Endre separator for fra og til tidspunkt fra . til : slik at det kan reformatteres til full dato
+  
+  make_timepart = function(klokka){
+    
+    print("Starter make_timepart")
+    
+    if(grepl(".", klokka, fixed = TRUE)) {
+      
+      paste0(strsplit(tidspunkt,"[.]")[[1]][1],":",strsplit(tidspunkt,"[.]")[[1]][2])
+       
+    } else {
+      
+      print("Gir tilbake input")
+      klokka
+      
+      }
     }
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    tempdf = df
+  tempdf = df
   
   ## Endre tidssone for datovariabler til Oslotid
   
@@ -157,13 +193,16 @@ get_cutoff = function(df,start,slutt){
   
   ## Sette en cut off date hvor end eller start time er utenfor sendetiden + beregne ny secondsVisible
   
+  print("Definerer endTimeCut og startTimeCut")
   
   tempdf$endTimeCut = ""
   tempdf$startTimeCut = ""
   
   
-  
   for(i in 1:nrow(tempdf)){ 
+    
+    
+    
     if(tempdf$Issendetid[i] == TRUE){
       print(paste0("starter (cutOff): ",i))
       
@@ -175,7 +214,7 @@ get_cutoff = function(df,start,slutt){
         
         ) {
         
-        tempdf$startTimeCut[i] = paste0(format(tempdf$startTime[i], "%Y-%m-%d")," ",start,":00:00 CEST")
+        tempdf$startTimeCut[i] = paste0(format(tempdf$startTime[i], "%Y-%m-%d")," ", make_timepart(start) ,":00 CEST")
         
       } else {
         
@@ -187,10 +226,12 @@ get_cutoff = function(df,start,slutt){
         
         time_to_numeric(format(tempdf$endTime[i], "%H.%M")) >= time_to_numeric(slutt)){
         
-        tempdf$endTimeCut[i] = paste0(format(tempdf$endTime[i], "%Y-%m-%d")," ",slutt,":00:00 CEST")
+        tempdf$endTimeCut[i] = paste0(format(tempdf$endTime[i], "%Y-%m-%d")," ",make_timepart(slutt),":00 CEST")
         
         
       } else {
+        
+        print(paste0("IsSendetid != TRUE : ",i))
         
         tempdf$endTimeCut[i] = paste0(as.character(tempdf$endTime[i])," CEST")
         
