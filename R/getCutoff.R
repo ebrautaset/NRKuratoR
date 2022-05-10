@@ -89,6 +89,8 @@ get_cutoff = function(df,start,slutt){
   
   for(i in 1:nrow(tempdf)){
     
+    print(paste0("starter (sendetid): ",i))
+    
     if(!is.na(tempdf$startTime[i])) {
       if(
         
@@ -144,6 +146,7 @@ get_cutoff = function(df,start,slutt){
       
     }  else {print(paste0("exception (isSendetid) on row ",i) )}
     
+    print(paste0("Ferdig (sendetid): ",i))    
     }
     
 
